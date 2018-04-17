@@ -1,0 +1,21 @@
+/**
+ * Created by michelcojocaru on 12/04/2018.
+ */
+
+Description of design and implementation:
+
+I used Node.js, Express and MongoDB (with mongoose interactions).
+
+The design pattern is MVC.
+
+The front-end was written in pure HTML & CSS.
+
+Followed an online tutorial for url shortener.
+As I made it as a stand-alone website, I have put most of the logic in the post endpoint. [CHECK README FOR LOGIC]
+There I first locate the CRUD method used (which button has been pressed) and interact directly with the DB (which is
+structured as a hashmap (_id:url))
+-> _id = shortened url (encoded part which should be after /)
+  longUrl = original url
+  (additionally I also added a timestamp - created_at)
+
+

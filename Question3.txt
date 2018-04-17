@@ -1,0 +1,14 @@
+/**
+ * Created by michelcojocaru on 12/04/2018.
+ */
+
+Question 3:
+
+Scaling a url shortener will primarily involve using additional Web servers on the front end behind a load balancer,
+to handle more incoming requests, and the use of extensive caching to resolve frequently-referenced "short" URLs
+without having to go all the way out to the master hash table every time.
+This takes advantage of the fact that a URL shortener will have a very high read-to-write ratio on my master hash table,
+and entries will effectively never be erased.  Also, the simple process of resolving shortened URLs is handled by my
+top-level "filter" and doesn't involve session handling, so it's essentially stateless and thus highly amenable to
+parallelism.  I can also optimize by using the base-64 encoded integer value itself as the hash key,
+thus eliminating the "decode" step when the URL needs to be resolved.
