@@ -25,7 +25,6 @@ mongoose.connect('mongodb://' + config.db.host + '/' + config.db.name, function(
 
 });
 
-
 // handles JSON bodies
 app.use(bodyParser.json());
 // handles URL encoded bodies
@@ -67,7 +66,6 @@ app.delete('/:del_id', function(req, res){
     var shortUrl = ''; // the shortened URL we will return
     var id = req.params.del_id;
 
-
     if(longUrl == ''){
         shortUrl = "404 (Not found)";
         res.send(shortUrl+"\n");
@@ -93,12 +91,14 @@ app.put('/:upd_id', function(req, res){
     var longUrl = req.body.url;
     var shortUrl = ''; // the shortened URL we will return
     var id = req.params.upd_id;
-
-    Url.update({_id: id}, {$set: longUrl}, function (err, doc) {
+    Url.findOne({_id: id}, function (err, doc) {
         if (doc) {
-            // update
-            shortUrl = "200 (Ok)";
-            res.send(shortUrl+"\n");
+            //Url.update({longUrl: doc.longUrl}, {longUrl: longUrl} , function (err, doc) {
+            Url.update({_id: id}, {$set: {long_url: longUrl}} , function (err, doc) {
+                // update
+                shortUrl = "200 (Ok)," + longUrl;
+                res.send(shortUrl + "\n");
+            });
         }else{
             shortUrl = "404 (Not found)";
             res.send(shortUrl+"\n");
@@ -111,7 +111,6 @@ app.post('/', function(req, res){
     // route to create and return a shortened URL given a long URL
     var longUrl = req.body.url;
     var shortUrl = ''; // the shortened URL we will return
-    console.log(longUrl);
     Url.findOne({long_url: longUrl}, function (err, doc) {
         if (doc) {
             // URL has already been shortened
@@ -143,9 +142,9 @@ app.get('/:get_id', function(req, res){
     // route to redirect the visitor to their original URL given the short URL
     var longUrl = req.body.url;
     var shortUrl = ''; // the shortened URL we will return
-    var get_id = req.params.get_id;
+    var id = req.params.get_id;
 
-    Url.findOne({_id: get_id}, function (err, doc) {
+    Url.findOne({_id: id}, function (err, doc) {
         if (doc) {
             // URL has already been shortened
             shortUrl = "200 (Ok), " + doc.long_url;
@@ -159,6 +158,13 @@ app.get('/:get_id', function(req, res){
         }
     });
 });
+
+/* RESET mongo index of url_count collection
+db.counters.updateOne(
+ { _id: "url_count", "seq": 26 },
+ { $set: { _id: "url_count", "seq": 1 } }
+ );
+*/
 
 
 var server = app.listen(3000, function(){
